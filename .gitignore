@@ -142,3 +142,5 @@ GitHub.sublime-settings
 
 # Django cache
 .cache/
+
+.idea/
