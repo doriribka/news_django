@@ -3,27 +3,28 @@ from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import News
-from .serializers import NewsSerializer
+from news.models import News
+from news.serializers import NewsSerializer
 
 
 class NewsCreateView(CreateAPIView):
     queryset = News.objects.all()
-    serializer_class = NewsSerializer
+    class_serializer = NewsSerializer
 
 
 class NewsListView(ListAPIView):
     queryset = News.objects.all()
-    serializer_class = NewsSerializer
+    class_serializer = NewsSerializer
 
 
 class NewsAPIView(APIView):
+    class_serializer = NewsSerializer
     def get(self, request, pk):
         try:
             news = News.objects.get(pk=pk)
         except News.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = NewsSerializer(news)
+        serializer = self.class_serializer(news)
         return Response(serializer.data)
 
     def put(self, request, pk):
@@ -32,7 +33,7 @@ class NewsAPIView(APIView):
         except News.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = NewsSerializer(news, data=request.data)
+        serializer = self.class_serializer(news, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
